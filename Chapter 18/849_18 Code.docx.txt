@@ -1,0 +1,292 @@
+﻿Chapter 18
+Custom Solutions Development SPFX
+Page 3 code snippet
+import * as React from 'react';
+import * as ReactDom from 'react-dom';
+import { Version } from '@microsoft/sp-core-library';
+import {
+  IPropertyPaneConfiguration,
+  PropertyPaneTextField
+} from '@microsoft/sp-property-pane';
+import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+
+
+import * as strings from 'HelloWorldWebPartStrings';
+import HelloWorld from './components/HelloWorld';
+import { IHelloWorldProps } from './components/IHelloWorldProps';
+
+
+export interface IHelloWorldWebPartProps {
+  description: string;
+}
+
+
+export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
+
+
+  public render(): void {
+    const element: React.ReactElement<IHelloWorldProps> = React.createElement(
+      HelloWorld,
+      {
+        description: this.properties.description
+      }
+    );
+
+
+    ReactDom.render(element, this.domElement);
+  }
+
+
+  protected onDispose(): void {
+    ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
+
+  protected get dataVersion(): Version {
+    return Version.parse('1.0');
+  }
+
+
+  protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
+    return {
+      pages: [
+        {
+          header: {
+            description: strings.PropertyPaneDescription
+          },
+          groups: [
+            {
+              groupName: strings.BasicGroupName,
+              groupFields: [
+                PropertyPaneTextField('description', {
+                  label: strings.DescriptionFieldLabel
+                })
+              ]
+            }
+          ]
+        }
+      ]
+    };
+  }
+}
+
+
+Page 13 code snippet
+* StorageQuota <StorageQuota> -Title <Title> -Template STS#0
+
+
+Page 13 code snippet
+Connect-PnPOnline -Url https://<your-tenant>.sharepoint.com/sites/<site-url> -UseWebLogin
+
+
+# create site collection app catalog
+Add-PnPSiteCollectionAppCatalog
+
+
+# or alternatively, create subsite app catalog
+Add-PnPAzureStorageApplicationPrincipal -TenantId <your-tenant-id> -ApplicationId <your-app-client-id> -ClientSecret <your-app-client-secret>
+New-PnPSite -Type TeamSite -Title "<Site Title>" -Url "<Site URL>" -SiteDesign <site-design-name> -Description "<Site Description>" -Owner "<User Principal Name>"
+Add-PnPAppCatalog -Site "<Site URL>"
+
+
+Page 15-16 code snippet
+https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items
+
+
+and
+
+
+https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items?$select=Title,ID&$filter=Status eq 'Completed'
+
+
+
+
+
+
+and
+import { sp } from "@pnp/sp";
+
+
+// Get all items from a SharePoint list
+sp.web.lists.getByTitle("My List").items.get().then((items) => {
+  console.log(items);
+});
+
+
+and
+
+
+GET https://graph.microsoft.com/v1.0/me
+
+
+Page 18-22 code snippet
+mkdir MyProject
+cd MyProject
+yo @microsoft/sharepoint
+
+
+and
+
+
+npm install
+gulp build
+gulp serve
+
+
+
+
+and
+
+
+mkdir HelloWorldWebPart
+
+
+and
+
+
+yo @microsoft/sharepoint
+
+
+
+
+and
+
+
+import { Version } from '@microsoft/sp-core-library';
+import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { escape } from '@microsoft/sp-lodash-subset';
+
+
+import styles from './HelloWorldWebPart.module.scss';
+import * as strings from 'HelloWorldWebPartStrings';
+
+
+export interface IHelloWorldWebPartProps {
+  description: string;
+}
+
+
+export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
+
+
+  public render(): void {
+    this.domElement.innerHTML = `
+      <div class="${ styles.helloWorld }">
+        <div class="${ styles.container }">
+          <div class="ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${ styles.row }">
+            <div class="ms-Grid-col ms-lg10 ms-xl8 ms-xlPush2 ms-lgPush1">
+              <span class="ms-font-xl ms-fontColor-white">${escape(this.properties.description)}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+
+  protected get dataVersion(): Version {
+    return Version.parse('1.0');
+  }
+
+
+  protected getPropertyPaneConfiguration(): any {
+    return {
+      pages: [
+        {
+          header: {
+            description: strings.PropertyPaneDescription
+          },
+          groups: [
+            {
+              groupName: strings.BasicGroupName,
+              groupFields: [
+                PropertyPaneTextField('description', {
+                  label: strings.DescriptionFieldLabel
+                })
+              ]
+            }
+          ]
+        }
+      ]
+    };
+  }
+}
+
+
+
+
+
+
+
+
+and
+
+
+gulp build
+
+
+
+
+and
+
+
+
+
+gulp serve
+
+
+
+
+
+
+and
+
+
+
+
+gulp bundle --ship
+gulp package-solution --ship
+
+
+
+
+and
+
+
+
+
+npm install @microsoft/microsoft-graph-client
+
+
+
+
+
+
+and
+
+
+
+
+import { Client } from "@microsoft/microsoft-graph-client";
+
+
+const client = Client.init({
+  authProvider: (done) => {
+    done(null, {
+      accessToken: "<INSERT_ACCESS_TOKEN_HERE>",
+      tokenType: "Bearer",
+    });
+  },
+});
+
+
+
+
+
+
+and
+
+
+
+
+const user = await client.api('/me').get();
+console.log(user);

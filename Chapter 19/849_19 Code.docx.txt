@@ -1,0 +1,321 @@
+﻿Chapter 19
+PnP, PowerShell 
+and Scripting
+
+
+Page 3 code snippet
+Here are a few examples of tasks you can perform with PowerShell in SharePoint Online
+* Connect to SharePoint Online site
+Connect-SPOService -Url "https://your-domain-admin.sharepoint.com/"
+
+
+* Create a new SharePoint Online site
+New-SPOSite -Title "Site Title" -Url "https://your-domain.sharepoint.com/sites/site-name" -Owner "user@your-domain.com" -Template "STS#0"
+
+
+* Get a list of all sites in your SharePoint Online tenant
+Get-SPOSite
+
+
+* Get a list of all lists in a SharePoint Online site
+Get-SPOList -Web "https://your-domain.sharepoint.com/sites/site-name"
+
+
+* Add a user to a SharePoint Online group:
+Add-SPOUser -Site "https://your-domain.sharepoint.com/sites/site-name" -LoginName "user@your-domain.com" -Group "GroupName"
+
+
+Page 4 code snippet
+#Connect to SharePoint Online Site
+Connect-PnPOnline -Url "https://yourdomain.sharepoint.com/sites/sitename" -UseWebLogin
+ 
+#Path of the Folder where files are saved
+$FolderPath = "C:\FolderName"
+ 
+#Get All Files from Folder
+$Files = Get-ChildItem $FolderPath
+ 
+#Loop through each file and upload to SharePoint Online
+ForEach ($File in $Files)
+{
+    Try
+    {
+        #Get the Contents of the file
+        $FileStream = New-Object IO.FileStream($File.FullName,[System.IO.FileMode]::Open)
+         
+        #Upload the file
+        Add-PnPFile -Path $File.FullName -Folder "Shared Documents" -Stream $FileStream -Values @{Modified=$File.LastWriteTime} -ErrorAction Stop
+        Write-Host "File '$($File.Name)' uploaded successfully to SharePoint." -ForegroundColor Green
+    }
+    Catch
+    {
+        Write-Host "Error uploading file '$($File.Name)': $_.Exception.Message" -ForegroundColor Red
+    }
+}
+
+
+Page 5 code snippet
+$Trigger = New-ScheduledTaskTrigger -Daily -At 2am
+$Action = New-ScheduledTaskAction -Execute 'PowerShell.exe' -Argument '-File "C:\Scripts\MyScript.ps1"'
+Register-ScheduledTask -TaskName "My Scheduled Task" -Trigger $Trigger -Action $Action
+
+
+and
+$myVariable = "Hello, World!"
+
+
+and
+Write-Host $myVariable
+
+
+Page 6 code snippet
+$i = 1
+while ($i -le 10) {
+    Write-Host "The value of i is: $i"
+    $i++
+}
+
+
+Page 7 code snippet
+# Connect to SharePoint Online site
+Connect-PnPOnline -Url https://yourtenant.sharepoint.com/sites/yoursite -UseWebLogin
+
+
+# Get recycle bin items deleted before a specified date
+$deletedBeforeDate = "2022-12-31"
+$recycleBinItems = Get-PnPRecycleBinItem | Where-Object { $_.DeletedDate -lt $deletedBeforeDate -and $_.ItemType -eq "File" }
+
+
+# Restore each item
+foreach ($item in $recycleBinItems) {
+    Write-Host "Restoring $($item.LeafName)..."
+    Restore-PnPRecycleBinItem -Identity $item.Id
+}
+
+
+Write-Host "Restore operation complete."
+
+
+Page 9 code snippet
+# Load the SharePoint CSOM Assemblies
+Add-Type -Path "C:\Program Files\Common Files\microsoft shared\Web Server Extensions\16\ISAPI\Microsoft.SharePoint.Client.dll"
+Add-Type -Path "C:\Program Files\Common Files\microsoft shared\Web Server Extensions\16\ISAPI\Microsoft.SharePoint.Client.Runtime.dll"
+
+
+# Set the URL of the SharePoint site
+$siteUrl = "https://contoso.sharepoint.com/sites/marketing"
+
+
+# Set the credentials to use for authentication
+$creds = Get-Credential
+
+
+# Create a client context object for the SharePoint site
+$ctx = New-Object Microsoft.SharePoint.Client.ClientContext($siteUrl)
+$ctx.Credentials = New-Object Microsoft.SharePoint.Client.SharePointOnlineCredentials($creds.UserName, $creds.Password)
+
+
+# Get the list to add the item to
+$list = $ctx.Web.Lists.GetByTitle("Documents")
+
+
+# Create a new list item
+$newItem = $list.AddItem()
+$newItem["Title"] = "New Document"
+$newItem["Category"] = "Marketing"
+$newItem.Update()
+
+
+# Execute the operation
+$ctx.ExecuteQuery()
+
+
+# Display a message indicating success
+Write-Host "New item added to list"
+
+
+Page 11-12 code snippet
+<View>
+   <Query>
+      <Where>
+         <Eq>
+            <FieldRef Name='Status'/>
+            <Value Type='Text'>In Progress</Value>
+         </Eq>
+      </Where>
+   </Query>
+   <ViewFields>
+      <FieldRef Name='Title'/>
+      <FieldRef Name='AssignedTo'/>
+      <FieldRef Name='DueDate'/>
+   </ViewFields>
+</View>
+
+
+
+
+And
+
+
+<View>
+  <Query>
+    <OrderBy>
+      <FieldRef Name="ColumnName" Ascending="TRUE"/>
+    </OrderBy>
+  </Query>
+</View>
+
+
+
+
+And
+
+
+<View>
+  <Query>
+    <Where>
+      <Eq>
+        <FieldRef Name="ColumnName"/>
+        <Value Type="Text">FilterValue</Value>
+      </Eq>
+    </Where>
+  </Query>
+</View>
+
+
+
+
+And
+using (var ctx = new ClientContext("https://contoso.sharepoint.com/sites/MySite"))
+{
+    var list = ctx.Web.Lists.GetByTitle("My List");
+
+
+    var camlQuery = new CamlQuery();
+    camlQuery.ViewXml = "<View><Query><Where><Geq><FieldRef Name='Created' /><Value IncludeTimeValue='TRUE' Type='DateTime'>2022-01-01T00:00:00Z</Value></Geq></Where></Query></View>";
+
+
+    var items = list.GetItems(camlQuery);
+    ctx.Load(items);
+    ctx.ExecuteQuery();
+
+
+    foreach (var item in items)
+    {
+        Console.WriteLine(item["Title"]);
+    }
+}
+
+
+Page 13 code snippet
+Connect-MsolService
+
+
+And
+
+
+$tenantId = "yourtenant.onmicrosoft.com"
+$appId = "yourappid"
+$appSecret = "yourappsecret"
+$resource = "https://graph.microsoft.com"
+
+
+# Obtain an access token
+$tokenEndpoint = "https://login.microsoftonline.com/$tenantId/oauth2/token"
+$body = @{
+    grant_type = "client_credentials"
+    client_id = $appId
+    client_secret = $appSecret
+    resource = $resource
+}
+$accessTokenResponse = Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body
+$accessToken = $accessTokenResponse.access_token
+
+
+# Make an API call using the access token
+$headers = @{
+    "Authorization" = "Bearer $accessToken"
+}
+$apiEndpoint = "https://graph.microsoft.com/v1.0/me"
+$user = Invoke-RestMethod -Method Get -Uri $apiEndpoint -Headers $headers
+Write-Output "Hello $($user.displayName)"
+
+
+Page 14-16 code snippet
+Install-Module -Name SharePointPnPPowerShellOnline
+
+
+And
+
+
+Connect-PnPOnline -Url https://yourtenant.sharepoint.com -UseWebLogin
+
+
+
+
+And
+
+
+Connect-SPOService -Url https://yourtenant-admin.sharepoint.com -Credential admin@yourtenant.onmicrosoft.com
+
+
+
+
+And
+
+
+# Load PnP PowerShell module
+Import-Module SharePointPnPPowerShellOnline
+
+
+# Connect to SharePoint Online
+Connect-PnPOnline -Url https://yourtenant.sharepoint.com -UseWebLogin
+
+
+# Get all lists in the site collection
+$lists = Get-PnPList
+
+
+# Loop through each list and display the title
+foreach ($list in $lists) {
+    Write-Host $list.Title
+}
+
+
+
+
+And
+.\Get-ListTitles.ps1
+
+
+
+
+And
+# Load PnP PowerShell module
+Import-Module SharePointPnPPowerShellOnline
+
+
+# Connect to SharePoint Online
+Connect-PnPOnline -Url https://yourtenant.sharepoint.com -UseWebLogin
+
+
+# Define variables
+$daysToRestore = 30 # Number of days to restore items from
+$recycleBinItems = Get-PnPRecycleBinItem | Where-Object { $_.DeletedDate -gt (Get-Date).AddDays(-$daysToRestore) }
+
+
+# Loop through each item in the recycle bin and restore it
+foreach ($item in $recycleBinItems) {
+    Write-Host "Restoring item $($item.LeafName) from $($item.DirName)..."
+    Restore-PnPRecycleBinItem -Identity $item.Id
+}
+
+
+# Display completion message
+Write-Host "All items deleted within the last $daysToRestore days have been restored."
+
+
+
+
+And
+.\Restore-RecycleBinItems.ps1

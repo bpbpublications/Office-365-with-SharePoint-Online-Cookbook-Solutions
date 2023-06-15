@@ -1,0 +1,23 @@
+﻿Chapter 12
+PowerApps
+Page 17 code snippet
+Here are examples of different types of formulas with the code that used in PowerApps
+* Arithmetic formulas:
+= 5 + 10
+* Text formulas:
+= "Hello " & "World" 
+* Logical formulas:
+= IF(5 > 10, "5 is greater than 10", "5 is not greater than 10") 
+* Date and time formulas:
+= Today()
+The Today() formula returns the current date. You can use this formula in various ways within your app, such as in a control's default value or in a calculation to determine the number of days between two dates.
+DateAdd(StartDate, 7, Days)
+The DateAdd formula adds a specified number of days, months, or years to a given start date. In this example, it adds 7 days to the StartDate field.
+* Lookup formulas:
+= LookUp(Orders, OrderID = 1, Total)
+* Aggregate formulas:
+= Sum(Orders, Total)
+* Information formulas:
+= IsBlank(TextInput1.Text)
+* Table formulas:
+= Table( { Column1: "A", Column2: "B" }, { Column1: "C", Column2: "D" } )

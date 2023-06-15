@@ -1,0 +1,13 @@
+﻿Chapter 7
+Search in Microsoft 365
+
+
+Page 16 code snippet
+<div class="search-result">
+  <h2><a href="{Url}">{Title}</a></h2>
+  <div class="meta">
+    <span class="author">{Author}</span>
+    <span class="date">{LastModifiedTime}</span>
+  </div>
+  <p>{HitHighlightedSummary}</p>
+</div>
