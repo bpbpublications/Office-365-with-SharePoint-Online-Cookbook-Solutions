@@ -3,7 +3,7 @@
 Unlock the full potential of Microsoft 365 workloads with our practical guide
 
 This is the repository for [Office 365 with SharePoint Online Cookbook Solutions
-](https://bpbonline.com/products/artificial-intelligence-for-students?variant=42616541642952),published by BPB Publications. 
+](https://bpbonline.com/products/office-365-with-sharepoint-online-cookbook-solutions?variant=42791288799432),published by BPB Publications. 
 
 ## About the Book
 Microsoft 365 provides tools for managing organizational tasks like content management, communication, report creation, and business automation processes. With this book, you’ll get to grips with enabling workspace collaboration using Microsoft SharePoint Online, Teams, and the Power Platform. 
@@ -22,4 +22,3 @@ By the end of the book, you will have the necessary skills to utilize Microsoft 
 •  Understand the security and compliance policies for Microsoft 365.
 
 •  Learn how to manage Microsoft 365 services with PowerShell.
-
